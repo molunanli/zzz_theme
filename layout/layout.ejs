@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <%- partial('_partial/head') %>
+</head>
+
+<body class="light-theme">
+
+  <canvas id="particleCanvas"></canvas>
+  <div class="scanlines-overlay"></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
+  <div class="skew-decoration"></div>
+  <div class="skew-decoration2"></div>
+
+  <%- partial('_partial/header') %>
+
+    <main>
+      <%- body %>
+    </main>
+
+
+    <div class="floating-actions">
+      <button id="themeToggleFloat" class="action-btn show" aria-label="主题切换">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+
+    <%- partial('_partial/footer') %>
+      <%- partial('_partial/scripts') %>
+</body>
+
+</html>

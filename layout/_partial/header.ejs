@@ -1,0 +1,17 @@
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="logo">
+      <a href="/" style="text-decoration: none;"><%= config.title %></a>
+    </div>
+    <div class="header-right">
+      <nav class="nav-menu" id="navMenu">
+        <% for (var nav in theme.menu){ %>
+          <a href="<%= theme.menu[nav] %>" class="<%= is_current(theme.menu[nav]) ? 'active' : '' %>"><%- nav %></a>
+        <% }%>
+      </nav>
+      <button class="menu-toggle" id="mobileMenuBtn" aria-label="菜单">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </div>
+</header>

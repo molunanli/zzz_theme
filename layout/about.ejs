@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>观测者档案 · 关于 | 零号空洞</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+
+        .page-hero { text-align: center; padding: 48px 20px 36px; }
+        .hero-avatar {
+            width: 90px; height: 90px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-neon), var(--secondary-neon));
+            margin: 0 auto 18px; display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; color: #fff;
+            box-shadow: 0 0 30px rgba(255,42,126,0.5), 0 0 60px rgba(0,242,255,0.25);
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        .page-hero h1 {
+            font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff, var(--secondary-neon), var(--primary-neon));
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .callsign { font-size: 0.8rem; color: var(--accent-amber); font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; margin-bottom: 6px; }
+        .bio { font-size: 0.9rem; color: var(--text-dim); max-width: 500px; margin: 0 auto; }
+
+        .profile-card {
+            background: var(--bg-card); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--card-border); border-radius: 18px; padding: 28px 24px;
+            margin-bottom: 30px; transition: var(--transition-theme); box-shadow: var(--postcard-shadow);
+        }
+        .profile-card h2 {
+            font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; padding-left: 10px;
+            border-left: 3px solid var(--primary-neon); color: var(--text-main);
+        }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; }
+        .info-item { display: flex; align-items: baseline; gap: 8px; font-size: 0.85rem; }
+        .info-label { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.5px; white-space: nowrap; min-width: 70px; text-transform: uppercase; }
+        .info-value { color: var(--text-main); font-weight: 500; }
+        .info-value.highlight { color: var(--secondary-neon); text-shadow: 0 0 6px rgba(0,242,255,0.3); }
+
+        .stats-dashboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 30px; }
+        .stat-panel-card {
+            background: var(--stat-card-bg); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+            border: 1px solid var(--card-border); border-radius: 16px; padding: 20px 16px; text-align: center;
+            transition: var(--transition-theme), transform 0.3s, border-color 0.3s;
+        }
+        .stat-panel-card:hover { border-color: var(--primary-neon); transform: translateY(-3px); box-shadow: 0 0 18px rgba(255,42,126,0.1); }
+        .panel-icon { font-size: 1.3rem; color: var(--primary-neon); margin-bottom: 6px; }
+        .panel-number { font-size: 1.8rem; font-weight: 800; font-family: 'Space Grotesk', monospace; color: var(--text-main); transition: all 0.3s ease; }
+        .panel-number.updating { color: var(--secondary-neon); text-shadow: 0 0 16px rgba(0,242,255,0.6); transform: scale(1.08); }
+        .panel-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+        /* 年份导航 */
+        .year-nav {
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            margin-bottom: 24px; flex-wrap: wrap;
+        }
+        .year-nav-btn {
+            background: var(--year-nav-bg); border: 1px solid var(--card-border); border-radius: 30px;
+            padding: 8px 18px; color: var(--text-dim); cursor: pointer; font-size: 0.85rem;
+            transition: all 0.25s; display: flex; align-items: center; gap: 6px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .year-nav-btn:hover { border-color: var(--primary-neon); color: var(--primary-neon); box-shadow: 0 0 12px rgba(255,42,126,0.2); }
+        .year-nav-btn:active { transform: scale(0.96); }
+        .year-title {
+            font-size: 1.3rem; font-weight: 700; font-family: 'Space Grotesk', monospace;
+            color: var(--text-main); min-width: 80px; text-align: center; letter-spacing: 1px; user-select: none;
+        }
+        .today-btn { background: var(--primary-neon); color: #fff; border-color: var(--primary-neon); font-weight: 600; }
+        .today-btn:hover { box-shadow: 0 0 20px rgba(255,42,126,0.5); }
+
+        /* 月份卡片网格 */
+        .months-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 14px;
+            margin-top: 12px;
+        }
+        .month-card {
+            background: var(--month-card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 10px 8px;
+            transition: all 0.3s ease;
+        }
+        .month-card:hover { border-color: var(--primary-neon); box-shadow: 0 0 15px rgba(255,42,126,0.1); }
+        .month-name {
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            margin-bottom: 4px;
+            font-size: 0.5rem;
+            color: var(--text-muted);
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+        }
+        .day-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.5rem;
+            font-weight: 600;
+            border-radius: 3px;
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            cursor: default;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .day-cell.empty { background: transparent; border: none; color: transparent; }
+        .day-cell:hover { transform: scale(1.4); z-index: 3; border-color: var(--primary-neon); box-shadow: var(--day-cell-hover-shadow); color: #fff; }
+        .day-cell[data-level="1"] { background: rgba(0,242,255,0.18); border-color: rgba(0,242,255,0.25); color: var(--text-main); }
+        .day-cell[data-level="2"] { background: rgba(0,242,255,0.4); border-color: rgba(0,242,255,0.45); color: #fff; }
+        .day-cell[data-level="3"] { background: rgba(0,242,255,0.7); border-color: rgba(0,242,255,0.6); color: #05070a; font-weight: 700; }
+        .day-cell[data-level="4"] { background: var(--secondary-neon); border-color: rgba(0,242,255,0.85); color: #05070a; font-weight: 800; box-shadow: 0 0 8px rgba(0,242,255,0.5); }
+        .day-cell.today { border: 2px solid var(--accent-amber); box-shadow: 0 0 8px rgba(255,107,53,0.4); }
+
+        .heatmap-legend { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 22px; font-size: 0.65rem; color: var(--text-dim); }
+        .legend-colors { display: flex; gap: 3px; }
+        .legend-cell { width: 14px; height: 14px; border-radius: 3px; }
+        .empty-hint { text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px; font-family: 'JetBrains Mono', monospace; display: none; }
+
+        .contact-row { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 20px; }
+        .contact-btn {
+            display: inline-flex; align-items: center; gap: 8px; background: var(--tag-bg);
+            border: 1px solid var(--tag-border); padding: 8px 18px; border-radius: 30px;
+            color: var(--secondary-neon); text-decoration: none; font-size: 0.8rem; font-weight: 500;
+            transition: all 0.25s;
+        }
+        .contact-btn:hover { background: var(--primary-neon); color: #fff; border-color: var(--primary-neon); box-shadow: 0 0 14px rgba(255,42,126,0.4); }
+
+        @media (max-width: 700px) {
+            .months-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .day-cell { font-size: 0.45rem; }
+            .month-name { font-size: 0.65rem; }
+        }
+        @media (max-width: 480px) {
+            .container { padding: 0 12px; }
+            .stats-dashboard { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .stat-panel-card { padding: 14px 10px; }
+            .panel-number { font-size: 1.4rem; }
+            .profile-card { padding: 20px 14px; border-radius: 14px; }
+            .months-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+            .year-nav-btn { padding: 6px 12px; font-size: 0.75rem; }
+            .year-title { font-size: 1rem; min-width: 60px; }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="container" style="max-width: 1100px;">
+            <div class="page-hero">
+                <div class="hero-avatar"><i class="fas fa-user-astronaut"></i></div>
+                <h1><%= config.author %></h1>
+                <p class="callsign"><%= config.wrapper %></p>
+                <p class="bio"><%= config.description %></p>
+            </div>
+
+            <div class="profile-card">
+                <h2><i class="fas fa-id-card"></i> 观测者身份档案</h2>
+                <div class="info-grid">
+                    <div class="info-item"><span class="info-label">代号</span><span class="info-value highlight"><%= config.title %></span></div>
+                    <div class="info-item"><span class="info-label">权限等级</span><span class="info-value">PUBLIC（公开博客）</span></div>
+                    <div class="info-item"><span class="info-label">研究领域</span><span class="info-value">
+                        <% site.tags.slice(0,1).forEach(function(tag){ %>
+                            <span><%= tag.name %></span>
+                        <% }) %>
+                    </span></div>
+                    <div class="info-item"><span class="info-label">隶属</span><span class="info-value">Hexo × GitHub Pages</span></div>
+                    <div class="info-item"><span class="info-label">基地坐标</span><span class="info-value">未知</span></div>
+                    <div class="info-item"><span class="info-label">活跃周期</span><span class="info-value"><%= getYearInfo().startYear %> - <%= getYearInfo().endYear %></span></div>
+                    <div class="info-item"><span class="info-label">已记录事件</span><span class="info-value highlight" id="eventCount"><%= site.posts.length %></span></div>
+                    <div class="info-item"><span class="info-label">追踪裂隙</span><span class="info-value" id="riftCount"><%= site.tags.length %> <span class="live-indicator"></span></span></div>
+                </div>
+            </div>
+
+            <div class="stats-dashboard">
+                <div class="stat-panel-card">
+                    <div class="panel-icon"><i class="fas fa-radiation"></i></div>
+                    <div class="panel-number" id="statYearPosts">—</div>
+                    <div class="panel-label">该年文章</div>
+                </div>
+                <div class="stat-panel-card">
+                    <div class="panel-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <div class="panel-number" id="statActiveMonths">—</div>
+                    <div class="panel-label">活跃月份数</div>
+                </div>
+                <div class="stat-panel-card">
+                    <div class="panel-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="panel-number" id="statTotalPosts"><%= site.posts.length %></div>
+                    <div class="panel-label">文章总数</div>
+                </div>
+                <div class="stat-panel-card">
+                    <div class="panel-icon"><i class="fas fa-satellite"></i></div>
+                    <div class="panel-number" id="statTags"><%= site.tags.length %></div>
+                    <div class="panel-label">标签总数</div>
+                </div>
+            </div>
+
+            <div class="profile-card" id="heatmapCard">
+                <h2><i class="fas fa-fire"></i> 年度观测密度</h2>
+                <div class="year-nav" id="yearNav">
+                    <button class="year-nav-btn" id="prevYearBtn"><i class="fas fa-chevron-left"></i> 上年</button>
+                    <span class="year-title" id="yearTitle">2026</span>
+                    <button class="year-nav-btn" id="nextYearBtn">下年 <i class="fas fa-chevron-right"></i></button>
+                    <button class="year-nav-btn today-btn" id="thisYearBtn"><i class="fas fa-calendar-check"></i> 今年</button>
+                </div>
+                <div class="months-grid" id="monthsGrid"></div>
+                <div class="empty-hint" id="emptyHint"><i class="far fa-calendar-times"></i> 该年暂无观测记录</div>
+                <div class="heatmap-legend">
+                    <span>0篇</span>
+                    <div class="legend-colors">
+                        <div class="legend-cell" style="background: var(--bg-card); border:1px solid var(--card-border);"></div>
+                        <div class="legend-cell" style="background: rgba(0,242,255,0.18);"></div>
+                        <div class="legend-cell" style="background: rgba(0,242,255,0.4);"></div>
+                        <div class="legend-cell" style="background: rgba(0,242,255,0.7);"></div>
+                        <div class="legend-cell" style="background: var(--secondary-neon); box-shadow: 0 0 6px rgba(0,242,255,0.5);"></div>
+                    </div>
+                    <span>4+篇</span>
+                </div>
+            </div>
+
+            <div class="profile-card" style="text-align: center;">
+                <h2 style="display: inline-block; margin-bottom: 20px;"><i class="fas fa-broadcast-tower"></i> 建立通讯</h2>
+                <p style="color:var(--text-dim); font-size:0.82rem; margin-bottom:16px;"><%= theme.author.signature %></p>
+                <div class="contact-row">
+                    <% theme.author.socialLinks.forEach(function(item,index){ %>
+                        <a href="<%= item.url %>" class="contact-btn"><i class="fab <%= item.icon %>"></i> <%= item.text %></a>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 由 Hexo 注入的文章日期数据
+        const postDates = [
+            <% site.posts.each(function(post, index){ %>
+                "<%= date(post.date, 'YYYY-MM-DD') %>"<%= index < site.posts.length - 1 ? ',' : '' %>
+            <% }) %>
+        ];
+        const START_DATE_STR = '<%= getSinceYear() %>';
+
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth();
+        const todayStr = today.toISOString().slice(0, 10);
+
+        let globalEarliestYear;
+        if (postDates.length > 0) {
+            const sorted = [...postDates].sort();
+            globalEarliestYear = parseInt(sorted[0].slice(0, 4), 10);
+        } else {
+            const parsed = new Date(START_DATE_STR);
+            globalEarliestYear = !isNaN(parsed.getTime()) ? parsed.getFullYear() : currentYear;
+        }
+
+        let displayedYear = currentYear;
+
+        const monthsGrid = document.getElementById('monthsGrid');
+        const yearTitle = document.getElementById('yearTitle');
+        const emptyHint = document.getElementById('emptyHint');
+        const statYearPosts = document.getElementById('statYearPosts');
+        const statActiveMonths = document.getElementById('statActiveMonths');
+        const statTotalPosts = document.getElementById('statTotalPosts');
+        const statTags = document.getElementById('statTags');
+
+        statTotalPosts.textContent = postDates.length;
+        statTags.textContent = '<%= site.tags.length %>';
+
+        const weekdays = ['一', '二', '三', '四', '五', '六', '日'];
+        const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+
+        function daysInMonth(year, month) {
+            return new Date(year, month + 1, 0).getDate();
+        }
+
+        function getDailyMap(year, month) {
+            const map = new Map();
+            const prefix = `${year}-${String(month+1).padStart(2,'0')}-`;
+            postDates.forEach(d => {
+                if (d.startsWith(prefix)) {
+                    const day = parseInt(d.slice(8,10), 10);
+                    map.set(day, (map.get(day) || 0) + 1);
+                }
+            });
+            return map;
+        }
+
+        function buildMonthCard(year, month) {
+            const totalDays = daysInMonth(year, month);
+            const firstDay = new Date(year, month, 1).getDay();
+            const startOffset = firstDay === 0 ? 6 : firstDay - 1;
+            const dailyMap = getDailyMap(year, month);
+
+            let cellsHtml = '';
+            for (let i = 0; i < startOffset; i++) {
+                cellsHtml += '<div class="day-cell empty"></div>';
+            }
+            for (let d = 1; d <= totalDays; d++) {
+                const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const count = dailyMap.get(d) || 0;
+                let level = 0;
+                if (count === 1) level = 1;
+                else if (count === 2) level = 2;
+                else if (count === 3) level = 3;
+                else if (count >= 4) level = 4;
+
+                const isToday = (dateStr === todayStr);
+                const todayClass = isToday ? ' today' : '';
+                const title = `${dateStr}: ${count} 篇`;
+                cellsHtml += `<div class="day-cell${todayClass}" data-level="${level}" data-date="${dateStr}" title="${title}">${d}</div>`;
+            }
+
+            return `
+                <div class="month-card">
+                    <div class="month-name">${monthNames[month]}</div>
+                    <div class="weekdays">
+                        ${weekdays.map(w => `<span>${w}</span>`).join('')}
+                    </div>
+                    <div class="days-grid">
+                        ${cellsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderYear(year) {
+            let totalYearPosts = 0;
+            let activeMonths = 0;
+            let monthsHtml = '';
+
+            for (let m = 0; m < 12; m++) {
+                const map = getDailyMap(year, m);
+                let monthPosts = 0;
+                map.forEach(count => monthPosts += count);
+                if (monthPosts > 0) activeMonths++;
+                totalYearPosts += monthPosts;
+                monthsHtml += buildMonthCard(year, m);
+            }
+
+            monthsGrid.innerHTML = monthsHtml;
+            yearTitle.textContent = year;
+            statYearPosts.textContent = totalYearPosts;
+            statActiveMonths.textContent = activeMonths; // 现在完全动态计算
+
+            if (totalYearPosts === 0) {
+                emptyHint.style.display = 'block';
+                monthsGrid.style.opacity = '0.5';
+            } else {
+                emptyHint.style.display = 'none';
+                monthsGrid.style.opacity = '1';
+            }
+
+            // 悬浮交互
+            monthsGrid.querySelectorAll('.day-cell:not(.empty)').forEach(cell => {
+                cell.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.5)';
+                    this.style.zIndex = '5';
+                });
+                cell.addEventListener('mouseleave', function() {
+                    this.style.transform = '';
+                    this.style.zIndex = '';
+                });
+            });
+        }
+
+        function goToPrevYear() {
+            if (displayedYear > globalEarliestYear) {
+                displayedYear--;
+                renderYear(displayedYear);
+            }
+        }
+
+        function goToNextYear() {
+            if (displayedYear < currentYear) {
+                displayedYear++;
+                renderYear(displayedYear);
+            }
+        }
+
+        function goToThisYear() {
+            displayedYear = currentYear;
+            renderYear(displayedYear);
+        }
+
+        document.getElementById('prevYearBtn').addEventListener('click', goToPrevYear);
+        document.getElementById('nextYearBtn').addEventListener('click', goToNextYear);
+        document.getElementById('thisYearBtn').addEventListener('click', goToThisYear);
+
+        // 初始化渲染，此时活跃月份等数据将准确反映当前年份的实际情况
+        renderYear(currentYear);
+    </script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+/* 主题切换按钮 */
+.floating-actions {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 99;
+}
+
+.action-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--primary-neon);
+    color: var(--secondary-neon);
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-theme), transform 0.25s, box-shadow 0.25s, opacity 0.3s, visibility 0.3s;
+    box-shadow: var(--action-btn-shadow);
+    opacity: 0;
+    visibility: hidden;
+    position: relative;
+}
+
+.action-btn.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.action-btn:hover {
+    background: var(--primary-neon);
+    color: white;
+    transform: translateY(-5px);
+    box-shadow: var(--action-btn-hover-shadow);
+}
+
+.action-btn::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    transition: border-color 0.3s;
+}
+
+.action-btn:hover::after {
+    border-color: rgba(255, 255, 255, 0.3);
+    animation: rippleOut 0.6s ease-out forwards;
+}
+
+@keyframes rippleOut {
+    0% {
+        inset: -3px;
+        opacity: 1;
+    }
+
+    100% {
+        inset: -16px;
+        opacity: 0;
+    }
+}
+
+#themeToggleFloat {
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (max-width: 768px) {
+    .floating-actions {
+        bottom: 20px;
+        right: 20px;
+        gap: 12px;
+    }
+
+    .action-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .floating-actions {
+        bottom: 16px;
+        right: 16px;
+        gap: 10px;
+    }
+
+    .action-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+}
+
+/* 全屏动态粒子背景画布particleCanvas */
+#particleCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.85;
+}
+
+body.light-theme #particleCanvas {
+    opacity: 0.55;
+}
+
+@media (max-width: 480px) {
+    #particleCanvas {
+        opacity: 0.5;
+    }
+
+    body.light-theme #particleCanvas {
+        opacity: 0.35;
+    }
+}
+
+/* 全屏扫描线覆盖层，用于模拟老式 CRT 显示器或赛博朋克视觉风格中的水平扫描线效果。深色下效果不明显 */
+.scanlines-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 3;
+    background: repeating-linear-gradient(0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, var(--scanline-opacity)) 2px,
+            rgba(0, 0, 0, var(--scanline-opacity)) 4px);
+    transition: --scanline-opacity 0.3s ease;
+}
+
+/* 跟随鼠标移动的动态光晕 */
+.cursor-glow {
+    position: fixed;
+    pointer-events: none;
+    z-index: 4;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: var(--cursor-glow-bg);
+    transform: translate(-50%, -50%);
+    transition: opacity 0.4s ease;
+    will-change: left, top;
+}
+
+@media (max-width: 768px) {
+    .cursor-glow {
+        display: none;
+    }
+}
+
+/* skew-decoration — 倾斜的条纹碎片 */
+.skew-decoration {
+    position: fixed;
+    bottom: 30px;
+    right: -40px;
+    width: 180px;
+    height: 180px;
+    background: repeating-linear-gradient(45deg,
+            var(--skew-decoration-bg),
+            var(--skew-decoration-bg) 10px,
+            transparent 10px,
+            transparent 20px);
+    pointer-events: none;
+    z-index: 0;
+    rotate: 25deg;
+    border-radius: 40% 60% 30% 70%;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 75%);
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    animation: skewFloat 12s ease-in-out infinite;
+}
+
+body.light-theme .skew-decoration {
+    opacity: 0.45;
+}
+
+@keyframes skewFloat {
+
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(25deg);
+    }
+
+    30% {
+        transform: translate(-20px, -15px) rotate(28deg);
+    }
+
+    60% {
+        transform: translate(10px, 10px) rotate(22deg);
+    }
+}
+
+.skew-decoration2 {
+    position: fixed;
+    top: 8%;
+    left: -30px;
+    width: 220px;
+    height: 220px;
+    pointer-events: none;
+    z-index: 0;
+    background: var(--skew-decoration2-bg);
+    border-radius: 50%;
+    filter: blur(18px);
+    opacity: 0.75;
+    transition: opacity 0.4s ease, filter 0.4s ease;
+    animation: gentlePulse 8s ease-in-out infinite;
+}
+
+body.light-theme .skew-decoration2 {
+    opacity: 0.55;
+    filter: blur(14px);
+}
+
+@keyframes gentlePulse {
+
+    0%,
+    100% {
+        opacity: 0.7;
+        filter: blur(18px);
+        transform: scale(1);
+    }
+
+    40% {
+        opacity: 0.9;
+        filter: blur(22px);
+        transform: scale(1.06);
+    }
+
+    75% {
+        opacity: 0.6;
+        filter: blur(15px);
+        transform: scale(0.95);
+    }
+}

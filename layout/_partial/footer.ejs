@@ -1,0 +1,18 @@
+<footer class="footer">
+    <div class="container">
+        <p>© <%= new Date().getFullYear() %>
+                <%= config.title %> | <%= config.description %>
+                <% if (theme.footer && theme.footer.credit) { %>
+                    <br><%= theme.footer.credit %>
+                <% } %>
+        </p>
+        <% if (theme.footer && theme.footer.links && theme.footer.links.length > 0) { %>
+        <p style="margin-top:8px;">
+            <% theme.footer.links.forEach((link, index) => { %>
+                <a href="<%= link.url %>"><i class="<%= link.icon %>"></i> <%= link.text %></a>
+                <% if (index < theme.footer.links.length - 1) { %> &nbsp;|&nbsp; <% } %>
+            <% }) %>
+        </p>
+        <% } %>
+    </div>
+</footer>

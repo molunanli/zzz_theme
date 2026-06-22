@@ -1,0 +1,125 @@
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="<%= url_for('/') %>">首页</a>
+    <% if (page.categories && page.categories.length) { %>
+      <span>/</span>
+      <% page.categories.forEach(function(cat, index) { %>
+        <a href="<%= url_for(cat.path) %>"><%= cat.name %></a><% if (index < page.categories.length - 1) { %>, <% } %>
+      <% }); %>
+    <% } %>
+    <span>/</span>
+    <span><%= page.title %></span>
+  </nav>
+  <div class="article-layout">
+    <article class="article-main">
+      <div class="article-header">
+        <% page.categories.forEach(function(cat, index) { %>
+        <div class="article-category"><%= cat.name %></div>
+        <% }); %>
+        <h1><%= page.title %></h1>
+        <div class="article-meta">
+          <span><i class="far fa-calendar-alt"></i><%= date(page.date,'YYYY.MM.DD') %></span>
+          <span><i class="fas fa-user-astronaut"></i><%= config.author %></span>
+          <span><i class="far fa-file-alt"></i><%= word_count(page.content) %> 字</span>
+          <span class="reading-time"><i class="far fa-clock"></i>阅读约 <%= read_time(page.content) %> 分钟</span>
+          <span><i class="fas fa-eye"></i><span id="busuanzi_value_page_pv">0</span> 次凝视</span>
+        </div>
+      </div>
+      <div class="article-body">
+        <%- page.content %>
+      </div>
+      <div class="article-tags">
+        <% page.tags.forEach(function(tag,index){ %>
+        <span>#<%= tag.name %></span>
+        <% }) %>
+      </div>
+      <div class="share-section">
+        <span>分享到空洞网络：</span>
+        <% theme.author.socialLinks.forEach(function(social,index){ %>
+        <a href="<%= social.url %>" class="share-btn"><i class="fab <%= social.icon %>"></i></a>
+        <% }) %>
+      </div>
+      <div class="article-nav">
+        <% if (page.prev) { %>
+        <a href="<%= url_for(page.prev.path) %>" class="nav-prev">
+          <div class="nav-label"><i class="fas fa-arrow-left"></i> 上一篇</div>
+          <div class="nav-title"><%= page.prev.title %></div>
+        </a>
+        <% } %>
+        <% if (page.next) { %>
+        <a href="<%= url_for(page.next.path) %>" class="nav-next">
+          <div class="nav-label">下一篇 <i class="fas fa-arrow-right"></i></div>
+          <div class="nav-title"><%= page.next.title %></div>
+        </a>
+        <% } %>
+      </div>
+    </article>
+    <aside class="article-sidebar">
+      <div class="side-card">
+        <h4><i class="fas fa-list-ul"></i> 文章目录</h4>
+        <div class="toc-scroll-container">
+          <%- toc(page.content, {
+            class: 'toc-list',           // 容器类名（原为 ul.toc-list）
+            class_item: 'toc-item',      // 列表项类名（原为 li.toc-item）
+            class_link: 'toc-link',      // 链接统一类名（原无，但可接受）
+            class_child: 'toc-sublist',  // 子列表类名（原为 ul.toc-sublist）
+            min_depth: 2,                // 从 h2 开始生成（这样 level-1 对应 h2，level-2 对应 h3）
+            max_depth: 3                 // 只生成到 h3，避免更深层次
+          }) %>
+          
+        </div>
+      </div>
+      <div class="side-card">
+        <h4><i class="fas fa-fire-flame"></i> 相关洞见</h4>
+        <ul class="related-list">
+          <% 
+          // ----- 1. 获取当前文章的所有标签名称 -----
+          const currentTags = page.tags ? page.tags.map(tag => tag.name) : [];
+          
+          // ----- 2. 如果当前文章没有标签，显示提示 -----
+          if (currentTags.length === 0) { %>
+            <li style="color: var(--text-dim); font-size: 0.8rem; padding: 8px 0;">暂无相关洞见</li>
+          <% 
+          } else {
+            // ----- 3. 筛选相关文章（同标签，排除自身） -----
+            let relatedPosts = site.posts.filter(post => {
+              if (post.path === page.path) return false;          // 排除自身
+              if (!post.tags || post.tags.length === 0) return false;
+              const postTagNames = post.tags.map(tag => tag.name);
+              // 计算重合度（至少有一个标签相同）
+              const overlap = postTagNames.filter(tag => currentTags.includes(tag)).length;
+              return overlap > 0;
+            });
+            
+            // ----- 4. 排序：先按重合度降序，再按日期降序 -----
+            relatedPosts = relatedPosts.sort((a, b) => {
+              const overlapA = a.tags.map(t => t.name).filter(t => currentTags.includes(t)).length;
+              const overlapB = b.tags.map(t => t.name).filter(t => currentTags.includes(t)).length;
+              if (overlapA !== overlapB) return overlapB - overlapA;
+              return b.date - a.date;
+            }).limit(3);   // 只取前 3 个
+            
+            // ----- 5. 遍历输出 -----
+            if (relatedPosts.length === 0) { %>
+              <li style="color: var(--text-dim); font-size: 0.8rem; padding: 8px 0;">暂无相关洞见</li>
+            <% 
+            } else {
+              relatedPosts.each(post => { %>
+                <li>
+                  <a href="<%- url_for(post.path) %>"><%= post.title %></a>
+                  <span class="related-date">
+                    <%- date(post.date, 'YYYY.MM.DD') %> ·
+                    <!-- <span id="busuanzi_value_page_pv">0</span> 凝视 -->
+                    <i class="fas fa-fire" style="color: #ff6b6b; margin-left: 2px;"></i>
+                  </span>
+                </li>
+              <% 
+              });
+            }
+          } 
+          %>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</div>

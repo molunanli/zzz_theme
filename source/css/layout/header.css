@@ -1,0 +1,186 @@
+.site-header {
+    padding: 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    background: rgba(5, 7, 10, 0.7);
+    border-bottom: 1px solid var(--border-glow);
+    transition: var(--transition-theme);
+    box-shadow: var(--header-shadow);
+}
+
+body.light-theme .site-header {
+    background: rgba(245, 243, 240, 0.82);
+    box-shadow: var(--header-shadow);
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    position: relative;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-left: auto;
+}
+
+.logo {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-family: 'Space Grotesk', monospace;
+    font-weight: 700;
+    font-size: 1.8rem;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--logo-gradient-dark) 20%, var(--secondary-neon) 60%, var(--primary-neon));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 12px rgba(0, 242, 255, 0.4), 0 0 30px rgba(255, 42, 126, 0.25);
+    transition: var(--transition-theme);
+    flex-shrink: 0;
+    position: relative;
+    animation: logoPulse 4s ease-in-out infinite;
+}
+
+body.light-theme .logo {
+    text-shadow: 0 0 6px rgba(11, 110, 122, 0.25), 0 0 16px rgba(212, 25, 62, 0.15);
+}
+
+.logo span {
+    font-size: 1rem;
+    background: none;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    color: var(--secondary-neon);
+    font-weight: 400;
+    white-space: nowrap;
+    text-shadow: 0 0 6px rgba(0, 242, 255, 0.3);
+}
+
+body.light-theme .logo span {
+    text-shadow: 0 0 4px rgba(11, 110, 122, 0.2);
+}
+
+.logo::before {
+    content: '';
+    position: absolute;
+    left: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary-neon);
+    box-shadow: 0 0 10px var(--primary-neon), 0 0 20px var(--primary-neon);
+    animation: statusBlink 2s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+
+    0%,
+    100% {
+        filter: brightness(1);
+    }
+
+    50% {
+        filter: brightness(1.2);
+    }
+}
+
+@keyframes statusBlink {
+
+    0%,
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 10px var(--primary-neon), 0 0 20px var(--primary-neon);
+    }
+
+    50% {
+        opacity: 0.3;
+        box-shadow: 0 0 4px var(--primary-neon), 0 0 8px var(--primary-neon);
+    }
+}
+
+.nav-menu {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    transition: var(--transition-theme);
+}
+
+.nav-menu a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: var(--transition-theme);
+    position: relative;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    padding: 4px 0;
+}
+
+.nav-menu a:hover,
+.nav-menu a.active {
+    color: var(--secondary-neon);
+    text-shadow: 0 0 8px rgba(0, 242, 255, 0.6), 0 0 16px rgba(0, 242, 255, 0.3);
+}
+
+body.light-theme .nav-menu a:hover,
+body.light-theme .nav-menu a.active {
+    text-shadow: 0 0 4px rgba(11, 110, 122, 0.35), 0 0 10px rgba(11, 110, 122, 0.18);
+}
+
+.nav-menu a::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-neon), var(--secondary-neon));
+    transition: width 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+    box-shadow: 0 0 8px var(--primary-neon);
+}
+
+body.light-theme .nav-menu a::after {
+    box-shadow: 0 0 4px var(--primary-neon);
+}
+
+.nav-menu a:hover::after,
+.nav-menu a.active::after {
+    width: 100%;
+}
+
+.menu-toggle {
+    display: none;
+    background: none;
+    border: 1px solid var(--primary-neon);
+    font-size: 1.5rem;
+    color: var(--secondary-neon);
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: var(--transition-theme);
+    flex-shrink: 0;
+    box-shadow: var(--menu-toggle-shadow);
+}
+
+.menu-toggle:hover {
+    background: rgba(255, 42, 126, 0.2);
+    box-shadow: var(--menu-toggle-hover-shadow);
+}
+
+body.light-theme .menu-toggle:hover {
+    background: rgba(212, 25, 62, 0.1);
+}
+

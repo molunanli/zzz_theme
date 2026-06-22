@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>标签档案馆 | 零号空洞博客</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+
+        /* ========= 标签页专属样式 ========= */
+        .tags-hero {
+            text-align: center;
+            /* padding: 64px 0 40px; */
+        }
+        .tags-hero h1 {
+            font-size: clamp(2.4rem, 8vw, 4.5rem);
+            font-weight: 800;
+            background: linear-gradient(125deg, var(--hero-gradient-dark), var(--secondary-neon), var(--primary-neon), var(--accent-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 0.8rem;
+        }
+        .tags-hero .stats {
+            color: var(--text-dim);
+            font-size: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 24px;
+        }
+        .tags-hero .stats i {
+            color: var(--primary-neon);
+            margin: 0 8px;
+            animation: iconFlicker 3s infinite;
+        }
+        @keyframes iconFlicker {
+            0%, 100% { opacity: 1; text-shadow: 0 0 6px var(--primary-neon); }
+            30% { opacity: 0.7; text-shadow: 0 0 12px var(--primary-neon); }
+            60% { opacity: 1; text-shadow: 0 0 4px var(--primary-neon); }
+        }
+        .glow-line {
+            width: 160px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-neon), var(--secondary-neon), transparent);
+            margin: 0 auto;
+            box-shadow: 0 0 12px rgba(255, 42, 126, 0.4), 0 0 24px rgba(0, 242, 255, 0.25);
+        }
+        body.light-theme .glow-line {
+            box-shadow: 0 0 8px rgba(212, 25, 62, 0.3), 0 0 16px rgba(11, 110, 122, 0.18);
+        }
+
+        .tag-cloud-section {
+            margin: 32px auto 48px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 14px 18px;
+            max-width: 900px;
+        }
+        .tag-cloud-item {
+            display: inline-block;
+            background: var(--tag-cloud-bg);
+            border: 1px solid var(--tag-cloud-border);
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            color: var(--text-dim);
+            text-decoration: none;
+            position: relative;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        .tag-cloud-item:hover {
+            background: var(--tag-cloud-hover-bg);
+            color: #fff;
+            border-color: var(--tag-cloud-hover-bg);
+            box-shadow: var(--tag-cloud-hover-shadow);
+            transform: translateY(-3px);
+        }
+        .tag-cloud-item.active {
+            background: var(--primary-neon);
+            color: #fff;
+            border-color: var(--primary-neon);
+            box-shadow: 0 0 18px var(--primary-neon), 0 0 36px rgba(255, 42, 126, 0.6);
+            animation: tagPulse 2s infinite;
+        }
+        @keyframes tagPulse {
+            0%, 100% { box-shadow: 0 0 18px var(--primary-neon), 0 0 36px rgba(255, 42, 126, 0.6); }
+            50% { box-shadow: 0 0 30px var(--primary-neon), 0 0 50px rgba(255, 42, 126, 0.8); }
+        }
+        .tag-cloud-item .count {
+            font-size: 0.75rem;
+            margin-left: 4px;
+            opacity: 0.8;
+        }
+
+        .post-list {
+            max-width: 900px;
+            margin: 0 auto 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+        .post-item {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 22px 26px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 16px 20px;
+            align-items: start;
+            opacity: 1;
+            transform: translateY(0);
+            max-height: 400px;
+            transition: opacity 0.4s, transform 0.4s, max-height 0.4s, margin 0.4s, padding 0.4s;
+        }
+        .post-item.hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            max-height: 0;
+            margin: 0;
+            padding: 0 26px;
+            border-width: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .post-item:hover {
+            border-color: rgba(255, 42, 126, 0.5);
+            box-shadow: var(--postcard-hover-shadow);
+            transform: translateX(6px);
+        }
+        body.light-theme .post-item:hover {
+            border-color: rgba(212, 25, 62, 0.35);
+        }
+        .post-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--primary-neon);
+            white-space: nowrap;
+            padding-top: 2px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .post-date::after {
+            content: '';
+            width: 2px;
+            height: 100%;
+            background: var(--primary-neon);
+            margin-top: 8px;
+            flex: 1;
+            min-height: 30px;
+            border-radius: 2px;
+            box-shadow: 0 0 6px var(--primary-neon);
+        }
+        .post-content h3 {
+            margin: 0 0 8px;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        .post-content h3 a {
+            text-decoration: none;
+            color: var(--text-main);
+            background: linear-gradient(90deg, var(--text-main), var(--secondary-neon));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .post-content h3 a:hover {
+            background: linear-gradient(90deg, var(--primary-neon), var(--secondary-neon));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .post-excerpt {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        .post-meta-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .post-tag {
+            background: rgba(0, 242, 255, 0.08);
+            border: 1px solid var(--tag-cloud-border);
+            padding: 3px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--card-tag-text);
+            text-decoration: none;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        body.light-theme .post-tag {
+            background: rgba(11, 110, 122, 0.08);
+            border-color: rgba(11, 110, 122, 0.2);
+            color: var(--card-tag-text);
+        }
+        .post-tag:hover {
+            background: var(--primary-neon);
+            border-color: var(--primary-neon);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 42, 126, 0.4);
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            display: none;
+        }
+        .empty-message.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 18px;
+            }
+            .cursor-glow {
+                display: none;
+            }
+            body {
+                cursor: auto;
+            }
+            .menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .header-right {
+                gap: 10px;
+            }
+            .site-header {
+                position: sticky;
+            }
+            .header-inner {
+                position: relative;
+                flex-wrap: nowrap;
+            }
+            .nav-menu {
+                position: absolute;
+                top: calc(100% + 8px);
+                left: 0;
+                right: 0;
+                background: var(--menu-bg);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-radius: 20px;
+                border: 1px solid var(--primary-neon);
+                box-shadow: var(--mobile-menu-shadow);
+                padding: 1.2rem 1.5rem;
+                flex-direction: column;
+                gap: 1.2rem;
+                align-items: stretch;
+                z-index: 1050;
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-12px);
+                transition: opacity 0.25s ease, visibility 0.25s, transform 0.25s ease;
+                pointer-events: none;
+                max-height: calc(100vh - 100px);
+                overflow-y: auto;
+                display: flex;
+            }
+            body.light-theme .nav-menu {
+                border-color: rgba(212, 25, 62, 0.5);
+                box-shadow: var(--mobile-menu-shadow);
+            }
+            .nav-menu.active {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+                pointer-events: auto;
+            }
+            .nav-menu a {
+                font-size: 1.1rem;
+                padding: 8px 0;
+                display: block;
+                text-align: center;
+                border-bottom: 1px solid var(--border-glow);
+            }
+            body.light-theme .nav-menu a {
+                border-bottom-color: rgba(0, 0, 0, 0.08);
+            }
+            .nav-menu a:last-child {
+                border-bottom: none;
+            }
+            .logo {
+                font-size: 1.5rem;
+            }
+            .tags-hero {
+                margin: 32px 0 40px;
+            }
+            .post-item {
+                grid-template-columns: 1fr;
+                padding: 18px;
+            }
+            .post-date::after {
+                display: none;
+            }
+            .post-date {
+                flex-direction: row;
+                gap: 8px;
+                align-items: center;
+            }
+            .post-date::before {
+                content: '◈';
+                color: var(--primary-neon);
+                font-size: 0.8rem;
+                margin-right: 4px;
+            }
+            .post-item:hover {
+                transform: translateX(0);
+            }
+            .tag-cloud-item {
+                padding: 6px 14px;
+                font-size: 0.85rem;
+            }
+            .floating-actions {
+                bottom: 20px;
+                right: 20px;
+                gap: 12px;
+            }
+            .action-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 1.2rem;
+            }
+            .skew-decoration {
+                width: 120px;
+                height: 120px;
+                bottom: 16px;
+                right: -28px;
+                opacity: 0.4;
+            }
+            .skew-decoration2 {
+                width: 140px;
+                height: 140px;
+                top: 5%;
+                left: -22px;
+                filter: blur(14px);
+                opacity: 0.55;
+                animation: gentlePulseMobile 8s ease-in-out infinite;
+            }
+        }
+        @keyframes gentlePulseMobile {
+            0%, 100% { opacity: 0.5; filter: blur(14px); transform: scale(1); }
+            40% { opacity: 0.7; filter: blur(17px); transform: scale(1.04); }
+            75% { opacity: 0.45; filter: blur(12px); transform: scale(0.96); }
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 14px;
+            }
+            .header-right {
+                gap: 6px;
+            }
+            .floating-actions {
+                bottom: 16px;
+                right: 16px;
+                gap: 10px;
+            }
+            .action-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+            .skew-decoration {
+                width: 90px;
+                height: 90px;
+                bottom: 10px;
+                right: -20px;
+                opacity: 0.3;
+            }
+            .skew-decoration2 {
+                width: 100px;
+                height: 100px;
+                top: 3%;
+                left: -16px;
+                filter: blur(10px);
+                opacity: 0.4;
+            }
+            #particleCanvas {
+                opacity: 0.5;
+            }
+            body.light-theme #particleCanvas {
+                opacity: 0.35;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="container">
+            <!-- 标签页头部 -->
+            <div class="tags-hero">
+                <h1>TAG ARCHIVES</h1>
+                <div class="stats">
+                    <i class="fas fa-tags"></i> <span id="totalTags"><%= site.tags.length %></span> 个标签 · 
+                    <i class="fas fa-file-alt"></i> <span id="totalPosts"><%= site.posts.length %></span> 篇文章
+                </div>
+                <div class="glow-line"></div>
+            </div>
+
+            <!-- 标签云（静态 HTML，不再由 JS 生成） -->
+            <div class="tag-cloud-section" id="tagCloud">
+                <span class="tag-cloud-item active" data-tag="all">全部 <span class="count">(<%= site.posts.length %>)</span></span>
+                <% site.tags.forEach(function(tag){ %>
+                    <span class="tag-cloud-item" data-tag="<%= tag.name %>">#<%= tag.name %> <span class="count">(<%= tag.posts.length %>)</span></span>
+                <% }) %>
+                
+            </div>
+
+            <!-- 文章列表（静态 HTML，不再由 JS 生成） -->
+            <div class="post-list" id="postList">
+                <% site.posts.each(function(post){ %>
+                    <article class="post-item" data-tags="<%= post.tags.map(tag => tag.name).join(',') %>">
+                        <div class="post-date"><%= date(post.date, 'YYYY-MM-DD') %></div>
+                        <div class="post-content">
+                            <h3><a href="<%= url_for(post.path) %>"><%= post.title %></a></h3>
+                            <p class="post-excerpt"><%= post.excerpt || post.content.substring(0, 100) + '...' %></p>
+                            <div class="post-meta-tags">
+                                <% post.tags.each(function(tag){ %>
+                                    <span class="post-tag" data-tag="<%= tag.name %>">#<%= tag.name %></span>
+                                <% }) %>
+                            </div>
+                        </div>
+                    </article>
+                <% }) %>
+            </div>
+
+            <div class="empty-message" id="emptyMessage">
+                <i class="fas fa-search"></i> 该标签下暂无文章。
+            </div>
+        </div>
+    </main>
+
+    <script>
+        (function() {
+            // ============ 标签过滤交互逻辑 ============
+            const tagCloudContainer = document.getElementById('tagCloud');
+            const postListContainer = document.getElementById('postList');
+            const emptyMessage = document.getElementById('emptyMessage');
+
+            // 根据选中的标签显示/隐藏文章
+            function filterPosts(tag) {
+                const allItems = postListContainer.querySelectorAll('.post-item');
+                let visibleCount = 0;
+
+                allItems.forEach(item => {
+                    const tags = item.dataset.tags.split(',');
+                    if (tag === 'all' || tags.includes(tag)) {
+                        item.style.display = ''; // 恢复默认布局
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                emptyMessage.classList.toggle('show', visibleCount === 0);
+            }
+
+            // 标签云点击事件
+            tagCloudContainer.addEventListener('click', function(e) {
+                const target = e.target.closest('.tag-cloud-item');
+                if (!target) return;
+
+                const tag = target.dataset.tag;
+
+                // 切换激活样式
+                document.querySelectorAll('.tag-cloud-item').forEach(el => el.classList.remove('active'));
+                target.classList.add('active');
+
+                // 过滤文章
+                filterPosts(tag);
+            });
+
+            // 文章内部标签点击事件（联动标签云）
+            postListContainer.addEventListener('click', function(e) {
+                const tagLink = e.target.closest('.post-tag');
+                if (!tagLink) return;
+                e.preventDefault();
+
+                const tag = tagLink.dataset.tag;
+                const cloudTag = document.querySelector(`.tag-cloud-item[data-tag="${tag}"]`);
+                if (cloudTag) {
+                    cloudTag.click(); // 触发标签云的点击，从而复用过滤与激活逻辑
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

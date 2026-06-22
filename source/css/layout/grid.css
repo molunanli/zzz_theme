@@ -1,0 +1,132 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 2;
+}
+
+.blog-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 40px;
+    margin: 0 0 60px;
+    align-items: flex-start;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 28px;
+}
+
+main {
+    position: relative;
+    z-index: 2;
+}
+
+/* 通用区块标题（也属于布局辅助） */
+.section-title {
+    font-size: 1.8rem;
+    margin-bottom: 38px;
+    display: inline-block;
+    letter-spacing: -0.3px;
+    color: var(--text-main);
+    position: relative;
+    padding-bottom: 8px;
+}
+
+.section-title i {
+    color: var(--primary-neon);
+    margin-right: 10px;
+    animation: iconFlicker 3s ease-in-out infinite;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-neon), transparent);
+    box-shadow: 0 0 6px var(--primary-neon);
+}
+
+body.light-theme .section-title::after {
+    box-shadow: 0 0 3px var(--primary-neon);
+}
+
+@keyframes iconFlicker {
+
+    0%,
+    100% {
+        opacity: 1;
+        text-shadow: 0 0 6px var(--primary-neon);
+    }
+
+    30% {
+        opacity: 0.7;
+        text-shadow: 0 0 12px var(--primary-neon);
+    }
+
+    60% {
+        opacity: 1;
+        text-shadow: 0 0 4px var(--primary-neon);
+    }
+}
+
+/* 全局自定义 tooltip */
+.tooltip-custom {
+  position: fixed;
+  padding: 8px 16px;
+
+  /* 背景：卡片质感 + 毛玻璃，利用现有变量 */
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  /* 文字 */
+  color: var(--text-main);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+
+  /* 发光边框：用 border-glow 作为渐变描边（降级为实色） */
+  border: 1px solid var(--border-glow);
+  border-radius: 4px;   /* 微锐利，呼应 ZZZ 的切割感 */
+
+  /* 霓虹阴影：直接复用你已有的悬停卡片阴影 */
+  box-shadow: var(--postcard-hover-shadow);
+
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 9999;
+
+  /* 初始隐藏 + 故障微倾斜 + 上浮 */
+  opacity: 0;
+  transform: translateY(6px) skewX(-1deg);
+  transition: 
+    opacity 0.2s cubic-bezier(0.2, 0.9, 0.4, 1),
+    transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1);
+}
+
+/* 激活态：归位 + 恢复倾斜 */
+.tooltip-custom.active {
+  opacity: 1;
+  transform: translateY(0) skewX(0);
+}
+
+/* 小三角：带发光的箭头 */
+.tooltip-custom::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: var(--border-glow) transparent transparent transparent;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}

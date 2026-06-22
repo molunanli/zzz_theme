@@ -1,0 +1,48 @@
+/* 浏览器默认样式重置（盒模型等） */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-dark);
+    background-image:
+        repeating-linear-gradient(45deg, var(--grid-color) 0px, var(--grid-color) 2px, transparent 2px, transparent 12px),
+        radial-gradient(circle at 15% 30%, var(--deco-glow-1) 0%, transparent 40%),
+        radial-gradient(circle at 85% 70%, var(--deco-glow-2) 0%, transparent 45%);
+    color: var(--text-main);
+    font-family: 'Inter', 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    scroll-behavior: smooth;
+    min-height: 100vh;
+    transition: var(--transition-theme);
+    cursor: crosshair;
+    overflow-x: hidden;
+    position: relative;
+}
+
+body.light-theme {
+    background-image:
+        repeating-linear-gradient(45deg, var(--grid-color) 0px, var(--grid-color) 2px, transparent 2px, transparent 12px),
+        radial-gradient(circle at 15% 30%, var(--deco-glow-1) 0%, transparent 40%),
+        radial-gradient(circle at 85% 70%, var(--deco-glow-2) 0%, transparent 45%);
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0a0c12;
+}
+
+body.light-theme ::-webkit-scrollbar-track {
+    background: #e2e5ea;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-neon);
+    border-radius: 8px;
+    box-shadow: 0 0 6px var(--primary-neon);
+}

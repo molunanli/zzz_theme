@@ -1,0 +1,39 @@
+# themes/my_theme/_config.yml
+menu:
+  首页: /
+  # 空洞探索<sup>分类</sup>: /categories
+  代理人档案<sup>归档</sup>: /archives
+  影像集<sup>标签</sup>: /tags
+  关于: /about
+# 页脚个性化配置
+footer:
+  credit: "灵感源自《绝区零》官网风格 — 都市幻想"
+  
+  links:
+    - text: "直播空洞"           # 原来 Twitch 链接的文字
+      url: "#"                  # 替换为实际直播地址
+      icon: "fab fa-twitch"     # Font Awesome 图标类
+    - text: "联络观测者"         # 原来信封链接的文字
+      url: "#"                  # 替换为实际联系地址（如 mailto:xxx）
+      icon: "fas fa-envelope"
+
+# 作者个人信息
+author:
+  name: "ZZZ"
+  bio: "一个专注于记录美好瞬间的私人博客。"     # 一句话简介
+  avatar: /images/avatar.png   # 头像路径，可留空
+  signature: "游走于空洞边缘，记录都市幻象。"        # 共鸣信号
+  location: "新艾利都"         # 可选：位置
+  socialLinks:
+    - text: "twitter"
+      url: "#"
+      icon: "fa-twitter"
+    - text: "discord"
+      url: "#"
+      icon: "fa-discord"
+    - text: "github"
+      url: "https://github.com/molunanli/molunanli.github.io"
+      icon: "fa-github"
+    - text: "微博"
+      icon: "fa-weibo"
+      url: "https://weibo.com/xxx"

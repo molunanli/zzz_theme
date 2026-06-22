@@ -1,0 +1,115 @@
+<div class="container" style="max-width: 1400px;">
+    <div class="hero">
+        <h1>
+            <%= config.subtitle %>
+        </h1>
+        <br>
+        <div class="subtitle-wrapper">
+            <p>
+                <%= config.wrapper %>
+            </p>
+        </div>
+        <div class="glow-line"></div>
+    </div>
+
+    <h2 class="section-title"><i class="fas fa-newspaper"></i> 最新报告</h2>
+
+    <div class="blog-grid">
+        <div>
+            <div class="card-grid" id="postGrid">
+                <% site.posts.sort('date', 'desc' ).slice(0, 9).forEach(function(post) { %>
+                    <article class="post-card">
+                        <div class="card-img">
+                            <img src="https://picsum.photos/id/104/400/240" alt="未来都市" loading="lazy">
+                            <% post.categories.slice(0,1).forEach(function(category){ %>
+                                <div class="card-tag">
+                                    <%= category.name %>
+                                </div>
+                                <% }) %>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-meta">
+                                <span><i class="far fa-calendar-alt"></i>
+                                    <%= date(post.date, 'YYYY.MM.DD' ) %>
+                                </span>
+                                <% post.tags.slice(0,1).forEach(function(tag){ %>
+                                    <span><i class="fas fa-tag"></i>
+                                        <%= tag.name %>
+                                    </span>
+                                    <% }) %>
+                            </div>
+                            <h3 data-tooltip="<%= post.title %>"><a href="<%- url_for(post.path) %>">
+                                    <%= post.title %>
+                                </a></h3>
+                            <p>
+                                <%= post.description %>
+                            </p>
+                            <a href="<%- url_for(post.path) %>" class="read-more">深入空洞 <i
+                                    class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </article>
+                    <% }) %>
+
+            </div>
+            <div class="load-more">
+                <button class="btn-neon" id="loadMoreBtn"><i class="fas fa-sync-alt"></i> 加载更多信号</button>
+            </div>
+        </div>
+
+        <aside class="sidebar">
+            <div class="side-card author-info">
+                <div class="avatar">
+                    <i class="fas fa-user-astronaut"></i>
+                </div>
+                <h3> <%= config.author %><i class="fas fa-pen-fancy"></i></h3>
+                <p><%= config.description %></p>
+                <div class="social-links">
+                    <% theme.author.socialLinks.forEach(function(linkInfo){ %>
+                    <a href="<%= linkInfo.url %>"><i class="fab <%= linkInfo.icon %>"></i></a>
+                    <% }) %>
+
+                </div>
+            </div>
+            <div class="side-card">
+                <h3><i class="fas fa-hashtag"></i> 热门议题</h3>
+                <ul class="recent-list">
+                    <% site.posts.sort('date','asce').slice(0,4).forEach(function(post){ %>
+                    <li><a href="<%- url_for(post.path) %>">▶ <%= post.title %></a><span class="recent-date"><%= Math.floor(Math.random() * 9000 + 1000).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') %> 热度</span></li>
+                    <% }) %>
+                    
+                </ul>
+            </div>
+            <div class="side-card">
+                <h3><i class="fas fa-hashtag"></i> 标签云</h3>
+                <div class="tag-cloud">
+                    <% site.tags.slice(0,10).forEach(function(tag){ %>
+                    <span><a href="<%- url_for(tag.path) %>">#<%= tag.name %></a></span>
+                    <% }) %>
+                </div>
+            </div>
+            <div class="side-card">
+                <h3><i class="fas fa-hashtag"></i> 共鸣信号</h3>
+                <p style="font-size:0.85rem"><i class="fas fa-head-side-vr"></i> <%= theme.author.signature %></p>
+                <div style="margin-top:16px;display:flex;align-items:center;gap:8px;color:var(--secondary-neon);">
+                    <i class="fas fa-volume-up" style="animation:iconFlicker 2s ease-in-out infinite;"></i>
+                    <span style="font-size:0.8rem;">收听最新播客</span>
+                    <span
+                        style="display:inline-block;width:40px;height:3px;background:var(--secondary-neon);border-radius:2px;animation:audioBar 0.8s ease-in-out infinite;box-shadow:0 0 6px var(--secondary-neon);"></span>
+                </div>
+                <style>
+                    @keyframes audioBar {
+
+                        0%,
+                        100% {
+                            width: 20px;
+                        }
+
+                        50% {
+                            width: 50px;
+                        }
+                    }
+                </style>
+            </div>
+        </aside>
+    </div>
+</div>

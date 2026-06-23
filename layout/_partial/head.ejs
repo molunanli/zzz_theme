@@ -15,7 +15,7 @@
 
 <link rel="stylesheet" href="<%- url_for('/css/pages/post.css') %>">
 
-
+<% if(is_archive() || is_category()){ %>
 <link rel="stylesheet" href="<%- url_for('/css/pages/archive.css') %>">
-
+<% } %>
 <link rel="stylesheet" href="<%- url_for('/css/base/mobile.css') %>">
